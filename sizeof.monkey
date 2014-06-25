@@ -3,6 +3,8 @@ Strict
 Public
 
 ' Preprocessor related:
+#SIZEOF_IMPLEMENTED = True
+
 #If LANG = "cpp"
 	#SIZEOF_NATIVE = True
 #End
