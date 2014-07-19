@@ -7,29 +7,63 @@ Public
 
 #If LANG = "cpp"
 	#SIZEOF_NATIVE = True
+	
+	#If TARGET <> "win8"
+		#SIZEOF_NORMAL_CPP_TARGET = True
+	#End
 #End
 
 ' Imports:
 'Import vector
 
-' Constant variable(s):
+' Global & Constant variable(s):
 
 ' Standard type sizes (In bytes):
+Const SizeOf_Octet:Int = 1
+Const SizeOf_Octet_InBits:Int = 8
+
+Const SizeOf_Byte:Int = SizeOf_Octet
+Const SizeOf_Byte_InBits:Int = SizeOf_Octet_InBits
+
 #If Not SIZEOF_NATIVE
-	Const SizeOf_Integer:Int = 4 ' 8
+	Const SizeOf_Integer:Int = 4 * SizeOf_Octet ' 8
 	
-	#If CPP_DOUBLE_PRECISION_FLOATS And LANG = "cpp" And TARGET <> "win8"
-		Const SizeOf_FloatingPoint:Int = 8
+	#If CPP_DOUBLE_PRECISION_FLOATS And SIZEOF_NORMAL_CPP_TARGET
+		Const SizeOf_FloatingPoint:Int = 8 * SizeOf_Octet
 	#Else
-		Const SizeOf_FloatingPoint:Int = 4
+		Const SizeOf_FloatingPoint:Int = 4 * SizeOf_Octet
 	#End
 	
-	Const SizeOf_Boolean:Int = 1
+	Const SizeOf_Boolean:Int = SizeOf_Byte ' 1
 #Else
-	Const SizeOf_Integer:Int = SizeOf(0)
-	Const SizeOf_FloatingPoint:Int = SizeOf(0.0)
-	Const SizeOf_Boolean:Int = SizeOf(False)
+	' Global variable(s) (External):
+	
+	' Modifying these values is considered non-standard, and should not be attempted:
+	Extern
+	
+	Global SizeOf_Integer:Int = "(int)sizeof(int)"
+	Global SizeOf_FloatingPoint:Int = "(int)sizeof(Float)"
+	Global SizeOf_Boolean:Int = "(int)sizeof(bool)"
+	
+	Public
 #End
+
+#If SIZEOF_NATIVE And LANG = "cpp" And SIZEOF_NORMAL_CPP_TARGET
+	' Global variable(s) (External):
+	
+	Extern
+	
+	' Modifying the value of this variable is considered non-standard, and should not be attempted.
+	Global SizeOf_Char:Int = "(int)sizeof(Char)"
+	
+	Public
+#Else
+	Const SizeOf_Char:Int = SizeOf_Byte ' 1
+#End
+
+Global SizeOf_Integer_InBits:Int = SizeOf_Integer * SizeOf_Octet_InBits
+Global SizeOf_FloatingPoint_InBits:Int = SizeOf_FloatingPoint * SizeOf_Octet_InBits
+Global SizeOf_Boolean_InBits:Int = SizeOf_Boolean * SizeOf_Byte_InBits ' SizeOf_Octet_InBits
 
 ' External bindings:
 #If SIZEOF_NATIVE
@@ -72,22 +106,51 @@ End
 	End
 #End
 
-Function SizeOf:Int(S:String)
+Function SizeOf:Int(S:String, IsString:Bool=False)
 	' Make the input-string upper-case.
 	S = S.ToUpper()
 	
-	If (S.Find("INT") <> -1) Then
-		Return SizeOf(0)
-	Elseif (S.Find("FLOAT") <> -1) Then
-		Return SizeOf(0.0)
-	Elseif (S.Find("BOOL") <> -1) Then
-		Return SizeOf(False)
-	#Rem
-		Elseif (S.Find("VEC") <> -1) Then
-			Return Max(Int(S), 1)
-	#End
+	If (Not IsString) Then
+		If (S.Find("INT") <> -1) Then
+			Return SizeOf(0)
+		Elseif (S.Find("FLOAT") <> -1) Then
+			Return SizeOf(0.0)
+		Elseif (S.Find("BOOL") <> -1) Then
+			Return SizeOf(False)
+		#Rem
+			Elseif (S.Find("VEC") <> -1) Then
+				Return Max(Int(S), 1)
+		#End
+		
+		#Rem
+			Elseif (S.Find("BYTE")) Then
+				Return SizeOf_Byte
+		#End
+		Endif
 	Endif
 	
 	' Return the default response.
-	Return 1
+	Return SizeOf_Char * S.Length()
+End
+
+Function InBits:Int(I:Int)
+	Return SizeOf_Integer_InBits
+End
+
+Function InBits:Int(F:Float)
+	Return SizeOf_FloatingPoint_InBits
+End
+
+Function InBits:Int(B:Bool)
+	Return SizeOf_Boolean_InBits
+End
+
+Function InBits:Int(S:String, IsString:Bool=False)
+	Local Output:= SizeOf(S, IsString)
+	
+	If (Not IsString) Then
+		Return Output * SizeOf_Octet_InBits
+	Endif
+	
+	Return Output * SizeOf_Char_InBits
 End
