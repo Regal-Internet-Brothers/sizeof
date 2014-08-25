@@ -16,6 +16,10 @@ Public
 ' Imports:
 'Import vector
 
+#If SIZEOF_NATIVE
+	Import "native/sizes.${LANG}"
+#End
+
 ' Global & Constant variable(s):
 
 ' Standard type sizes (In bytes):
@@ -41,9 +45,9 @@ Const SizeOf_Byte_InBits:Int = SizeOf_Octet_InBits
 	' Modifying these values is considered non-standard, and should not be attempted:
 	Extern
 	
-	Global SizeOf_Integer:Int = "(int)sizeof(int)"
-	Global SizeOf_FloatingPoint:Int = "(int)sizeof(Float)"
-	Global SizeOf_Boolean:Int = "(int)sizeof(bool)"
+	Global SizeOf_Integer:Int = "sizeof_int"
+	Global SizeOf_FloatingPoint:Int = "sizeof_Float"
+	Global SizeOf_Boolean:Int = "sizeof_Boolean"
 	
 	Public
 #End
@@ -54,13 +58,14 @@ Const SizeOf_Byte_InBits:Int = SizeOf_Octet_InBits
 	Extern
 	
 	' Modifying the value of this variable is considered non-standard, and should not be attempted.
-	Global SizeOf_Char:Int = "(int)sizeof(Char)"
+	Global SizeOf_Char:Int = "sizeof_Char"
 	
 	Public
 #Else
 	Const SizeOf_Char:Int = SizeOf_Byte ' 1
 #End
 
+Global SizeOf_Char_InBits:Int = SizeOf_Char * SizeOf_Octet_InBits
 Global SizeOf_Integer_InBits:Int = SizeOf_Integer * SizeOf_Octet_InBits
 Global SizeOf_FloatingPoint_InBits:Int = SizeOf_FloatingPoint * SizeOf_Octet_InBits
 Global SizeOf_Boolean_InBits:Int = SizeOf_Boolean * SizeOf_Byte_InBits ' SizeOf_Octet_InBits
@@ -69,10 +74,14 @@ Global SizeOf_Boolean_InBits:Int = SizeOf_Boolean * SizeOf_Byte_InBits ' SizeOf_
 #If SIZEOF_NATIVE
 	Extern
 	
-	' Functions (Native):
-	Function SizeOf:Int(I:Int)="(int)sizeof"
-	Function SizeOf:Int(F:Float)="(int)sizeof"
-	Function SizeOf:Int(B:Bool)="(int)sizeof"
+	#If LANG = "cpp"
+		' Functions (Native):
+		Function SizeOf:Int(I:Int)="(int)sizeof"
+		Function SizeOf:Int(F:Float)="(int)sizeof"
+		Function SizeOf:Int(B:Bool)="(int)sizeof"
+	#Else
+		' Nothing so far.
+	#End
 	
 	Public
 #End
