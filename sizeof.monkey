@@ -4,6 +4,7 @@ Public
 
 ' Preprocessor related:
 #SIZEOF_IMPLEMENTED = True
+#SIZEOF_DATABUFFER = True
 
 #If LANG = "cpp"
 	#SIZEOF_NATIVE = True
@@ -13,12 +14,21 @@ Public
 	#End
 #End
 
-' Imports:
+' Imports (Public):
 'Import vector
 
 #If SIZEOF_NATIVE
 	Import "native/sizes.${LANG}"
 #End
+
+' Imports (Private):
+Private
+
+#If SIZEOF_DATABUFFER
+	Import brl.databuffer
+#End
+
+Public
 
 ' Global & Constant variable(s):
 
@@ -141,6 +151,12 @@ Function SizeOf:Int(S:String, IsString:Bool=False)
 	' Return the default response.
 	Return SizeOf_Char * S.Length()
 End
+
+#If SIZEOF_DATABUFFER
+	Function SizeOf:Int(Data:DataBuffer)
+		Return Data.Length()
+	End
+#End
 
 Function InBits:Int(I:Int)
 	Return SizeOf_Integer_InBits
