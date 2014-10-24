@@ -32,7 +32,7 @@ Public
 
 ' Global & Constant variable(s):
 
-' Standard type sizes (In bytes):
+' Standard type sizes:
 Const SizeOf_Octet:Int = 1
 Const SizeOf_Octet_InBits:Int = 8
 
@@ -97,6 +97,8 @@ Global SizeOf_Boolean_InBits:Int = SizeOf_Boolean * SizeOf_Byte_InBits ' SizeOf_
 #End
 
 ' Functions (Monkey):
+
+' This is mainly used for internal stream functionality in 'util'.
 Function IntSize:Int(Size:Int)
 	If (Size > 1) Then
 		If (Size > 4) Then
@@ -125,7 +127,25 @@ End
 	End
 #End
 
-Function SizeOf:Int(S:String, IsString:Bool=False)
+#If Not MONKEYLANG_EXPLICIT_BOXES
+	Function SizeOf:Int(IO:IntObject)
+		Return SizeOf(IO.ToInt())
+	End
+	
+	Function SizeOf:Int(FO:FloatObject)
+		Return SizeOf(FO.ToFloat())
+	End
+	
+	Function SizeOf:Int(BO:BoolObject)
+		Return SizeOf(BO.ToBool())
+	End
+	
+	Function SizeOf:Int(S:StringObject, IsString:Bool=True)
+		Return SizeOf(S.ToString(), IsString)
+	End
+#End
+
+Function SizeOf:Int(S:String, IsString:Bool=True)
 	' Make the input-string upper-case.
 	S = S.ToUpper()
 	
