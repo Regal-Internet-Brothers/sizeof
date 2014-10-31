@@ -1,4 +1,4 @@
 sizeof
 ======
 
-A basic module for Monkey X which allows you to detect the size of the default data types.
+A basic type-size module for the default types for the [Monkey programming language](https://github.com/blitz-research/monkey).
