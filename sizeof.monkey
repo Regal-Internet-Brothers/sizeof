@@ -4,14 +4,16 @@ Public
 
 ' Preprocessor related:
 #SIZEOF_IMPLEMENTED = True
+
+' By enabling this, you allow 'SizeOf' to be used with the standard 'DataBuffer' class.
 #SIZEOF_DATABUFFER = True
 
 #If LANG = "cpp"
 	#SIZEOF_NATIVE = True
-	
-	#If TARGET <> "win8"
-		#SIZEOF_NORMAL_CPP_TARGET = True
-	#End
+#End
+
+#If LANG = "cpp" And TARGET <> "win8"
+	#SIZEOF_NORMAL_CPP_TARGET = True
 #End
 
 ' Imports (Public):
@@ -36,19 +38,22 @@ Public
 Const SizeOf_Octet:Int = 1
 Const SizeOf_Octet_InBits:Int = 8
 
-Const SizeOf_Byte:Int = SizeOf_Octet
-Const SizeOf_Byte_InBits:Int = SizeOf_Octet_InBits
+Const SizeOf_Byte:= SizeOf_Octet
+Const SizeOf_Byte_InBits:= SizeOf_Octet_InBits
 
 #If Not SIZEOF_NATIVE
-	Const SizeOf_Integer:Int = 4 * SizeOf_Octet ' 8
+	Const SizeOf_Integer:= 4 * SizeOf_Octet ' 8
 	
 	#If CPP_DOUBLE_PRECISION_FLOATS And SIZEOF_NORMAL_CPP_TARGET
-		Const SizeOf_FloatingPoint:Int = 8 * SizeOf_Octet
+		Const SizeOf_FloatingPoint:= 8 * SizeOf_Octet
 	#Else
-		Const SizeOf_FloatingPoint:Int = 4 * SizeOf_Octet
+		Const SizeOf_FloatingPoint:= 4 * SizeOf_Octet
 	#End
 	
-	Const SizeOf_Boolean:Int = SizeOf_Byte ' 1
+	Const SizeOf_Boolean:= SizeOf_Byte ' 1
+	
+	Const SizeOf_Short:= 2 * SizeOf_Octet
+	Const SizeOf_Long:= 8 * SizeOf_Octet
 #Else
 	' Global variable(s) (External):
 	
@@ -57,7 +62,10 @@ Const SizeOf_Byte_InBits:Int = SizeOf_Octet_InBits
 	
 	Global SizeOf_Integer:Int = "sizeof_int"
 	Global SizeOf_FloatingPoint:Int = "sizeof_Float"
-	Global SizeOf_Boolean:Int = "sizeof_Boolean"
+	Global SizeOf_Boolean:Int = "sizeof_boolean"
+	
+	Global SizeOf_Short:Int = "sizeof_short"
+	Global SizeOf_Long:Int = "sizeof_long"
 	
 	Public
 #End
@@ -72,13 +80,17 @@ Const SizeOf_Byte_InBits:Int = SizeOf_Octet_InBits
 	
 	Public
 #Else
-	Const SizeOf_Char:Int = SizeOf_Byte ' 1
+	Const SizeOf_Char:= SizeOf_Byte ' 1
 #End
 
-Global SizeOf_Char_InBits:Int = SizeOf_Char * SizeOf_Octet_InBits
-Global SizeOf_Integer_InBits:Int = SizeOf_Integer * SizeOf_Octet_InBits
-Global SizeOf_FloatingPoint_InBits:Int = SizeOf_FloatingPoint * SizeOf_Octet_InBits
-Global SizeOf_Boolean_InBits:Int = SizeOf_Boolean * SizeOf_Byte_InBits ' SizeOf_Octet_InBits
+' Type sizes (In bits):
+Global SizeOf_Char_InBits:= SizeOf_Char * SizeOf_Octet_InBits
+Global SizeOf_Integer_InBits:= SizeOf_Integer * SizeOf_Octet_InBits
+Global SizeOf_FloatingPoint_InBits:= SizeOf_FloatingPoint * SizeOf_Octet_InBits
+Global SizeOf_Boolean_InBits:= SizeOf_Boolean * SizeOf_Byte_InBits ' SizeOf_Octet_InBits
+
+Global SizeOf_Short_InBits:= SizeOf_Short * SizeOf_Octet_InBits
+Global SizeOf_Long_InBits:= SizeOf_Long * SizeOf_Octet_InBits
 
 ' External bindings:
 #If SIZEOF_NATIVE
@@ -102,15 +114,16 @@ Global SizeOf_Boolean_InBits:Int = SizeOf_Boolean * SizeOf_Byte_InBits ' SizeOf_
 Function IntSize:Int(Size:Int)
 	If (Size > 1) Then
 		If (Size > 4) Then
-			Return 8
+			Return SizeOf_Long
 		Elseif (Size < 4) Then
-			Return 2
+			Return SizeOf_Short
 		Else
-			Return 4
+			Return SizeOf_Integer
 		Endif
 	Endif
 	
-	Return 1
+	' Return the default response.
+	Return SizeOf_Byte
 End
 
 #If Not SIZEOF_NATIVE
@@ -146,10 +159,10 @@ End
 #End
 
 Function SizeOf:Int(S:String, IsString:Bool=True)
-	' Make the input-string upper-case.
-	S = S.ToUpper()
-	
 	If (Not IsString) Then
+		' Make the input-string upper-case.
+		S = S.ToUpper()
+		
 		If (S.Find("INT") <> -1) Then
 			Return SizeOf(0)
 		Elseif (S.Find("FLOAT") <> -1) Then
