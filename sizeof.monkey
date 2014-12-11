@@ -34,6 +34,13 @@ Public
 
 ' Global & Constant variable(s):
 
+' Please refrain from using these "constants" for the sake of aliases.
+' For example, you should do something like: "Const SizeOf_F:= SizeOf_FloatingPoint".
+' If if must do this, please use a global variable as the alias (Could be slower).
+' It's best not to bother with this, though, just use these variables directly.
+' You could technically check against 'SIZEOF_NATIVE' with the preprocessor,
+' but this may not be portable in the future.
+
 ' Standard type sizes:
 Const SizeOf_Octet:Int = 1
 Const SizeOf_Octet_InBits:Int = 8
