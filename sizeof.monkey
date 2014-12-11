@@ -12,7 +12,7 @@ Public
 	#SIZEOF_NATIVE = True
 #End
 
-#If LANG = "cpp" And TARGET <> "win8"
+#If LANG = "cpp" And TARGET <> "win8" And TARGET <> "winrt"
 	#SIZEOF_NORMAL_CPP_TARGET = True
 #End
 
