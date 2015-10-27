@@ -17,7 +17,7 @@ Public
 #End
 
 ' Imports (Public):
-'Import vector
+'Import regal.vector
 
 #If SIZEOF_NATIVE
 	Import "native/sizes.${LANG}"
@@ -51,18 +51,18 @@ Const SizeOf_Byte:= SizeOf_Octet
 Const SizeOf_Byte_InBits:= SizeOf_Octet_InBits
 
 #If Not SIZEOF_NATIVE
-	Const SizeOf_Integer:= 4 * SizeOf_Octet ' 8
+	Const SizeOf_Integer:= 4 * SizeOf_Byte ' 8
 	
 	#If CPP_DOUBLE_PRECISION_FLOATS And SIZEOF_NORMAL_CPP_TARGET
-		Const SizeOf_FloatingPoint:= 8 * SizeOf_Octet
+		Const SizeOf_FloatingPoint:= 8 * SizeOf_Byte
 	#Else
-		Const SizeOf_FloatingPoint:= 4 * SizeOf_Octet
+		Const SizeOf_FloatingPoint:= 4 * SizeOf_Byte
 	#End
 	
 	Const SizeOf_Boolean:= SizeOf_Byte ' 1
 	
-	Const SizeOf_Short:= 2 * SizeOf_Octet
-	Const SizeOf_Long:= 8 * SizeOf_Octet
+	Const SizeOf_Short:= 2 * SizeOf_Byte
+	Const SizeOf_Long:= 8 * SizeOf_Byte
 #Else
 	' Global variable(s) (External):
 	
@@ -93,13 +93,13 @@ Const SizeOf_Byte_InBits:= SizeOf_Octet_InBits
 #End
 
 ' Type sizes (In bits):
-Global SizeOf_Char_InBits:= SizeOf_Char * SizeOf_Octet_InBits
-Global SizeOf_Integer_InBits:= SizeOf_Integer * SizeOf_Octet_InBits
-Global SizeOf_FloatingPoint_InBits:= SizeOf_FloatingPoint * SizeOf_Octet_InBits
-Global SizeOf_Boolean_InBits:= SizeOf_Boolean * SizeOf_Byte_InBits ' SizeOf_Octet_InBits
+Global SizeOf_Char_InBits:= SizeOf_Char * SizeOf_Byte_InBits
+Global SizeOf_Integer_InBits:= SizeOf_Integer * SizeOf_Byte_InBits
+Global SizeOf_FloatingPoint_InBits:= SizeOf_FloatingPoint * SizeOf_Byte_InBits
+Global SizeOf_Boolean_InBits:= SizeOf_Boolean * SizeOf_Byte_InBits ' SizeOf_Byte_InBits
 
-Global SizeOf_Short_InBits:= SizeOf_Short * SizeOf_Octet_InBits
-Global SizeOf_Long_InBits:= SizeOf_Long * SizeOf_Octet_InBits
+Global SizeOf_Short_InBits:= SizeOf_Short * SizeOf_Byte_InBits
+Global SizeOf_Long_InBits:= SizeOf_Long * SizeOf_Byte_InBits
 
 ' External bindings:
 #If SIZEOF_NATIVE
@@ -216,7 +216,7 @@ Function InBits:Int(S:String, IsString:Bool=False)
 	Local Output:= SizeOf(S, IsString)
 	
 	If (Not IsString) Then
-		Return Output * SizeOf_Octet_InBits
+		Return Output * SizeOf_Byte_InBits
 	Endif
 	
 	Return Output * SizeOf_Char_InBits
