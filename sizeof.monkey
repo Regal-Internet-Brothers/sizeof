@@ -9,7 +9,7 @@ Public
 #SIZEOF_DATABUFFER = True
 
 #If LANG = "cpp"
-	#SIZEOF_NATIVE = True
+	'#SIZEOF_NATIVE = True
 #End
 
 #If LANG = "cpp" And TARGET <> "win8" And TARGET <> "winrt"
@@ -59,7 +59,7 @@ Const SizeOf_Byte_InBits:= SizeOf_Octet_InBits
 		Const SizeOf_FloatingPoint:= 4 * SizeOf_Byte
 	#End
 	
-	Const SizeOf_Boolean:= SizeOf_Byte ' 1
+	Const SizeOf_Boolean:= SizeOf_Byte ' 1 ' 4
 	
 	Const SizeOf_Short:= 2 * SizeOf_Byte
 	Const SizeOf_Long:= 8 * SizeOf_Byte
